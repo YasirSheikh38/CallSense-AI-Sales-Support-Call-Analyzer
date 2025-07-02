@@ -2,56 +2,73 @@
 
 from fastapi import FastAPI, File, UploadFile, Depends
 from fastapi.responses import JSONResponse
-import os
-import shutil
-import whisper
+import os, shutil, whisper
 
-from sqlalchemy.orm import Session
-from app.database import engine, get_db
-from app.models import call
+from app import models
+from app.database import engine
+from app.dependencies import get_db
 from app.models.call import Call
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
 
-# Create tables if not already present
-call.Base.metadata.create_all(bind=engine)
+from fastapi.middleware.cors import CORSMiddleware
 
-# Initialize FastAPI app
+
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For development, allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Load Whisper model once at startup
 model = whisper.load_model("base")
 
-# Uploads directory setup
+# Uploads directory
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Transcribe endpoint
 @app.post("/transcribe")
-async def transcribe_audio(
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db)
-):
+async def transcribe_audio(file: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
-        # Save uploaded file locally
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Transcribe using Whisper
         result = model.transcribe(file_path)
-        transcription = result["text"]
 
-        # Save to database
-        call_entry = Call(filename=file.filename, transcript=transcription)
-        db.add(call_entry)
+        # Save to DB
+        call = Call(
+            filename=file.filename,
+            transcript=result["text"]
+        )
+        db.add(call)
         db.commit()
-        db.refresh(call_entry)
+        db.refresh(call)
 
         return JSONResponse(content={
-            "id": call_entry.id,
-            "filename": call_entry.filename,
-            "transcription": call_entry.transcript,
-            "created_at": str(call_entry.created_at)
+            "transcription": result["text"],
+            "call_id": call.id
         })
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+
+# ✅ ADD THIS PART — GET endpoint and DB dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/transcriptions")
+def get_transcriptions(db: Session = Depends(get_db)):
+    transcriptions = db.query(Call).all()
+    return transcriptions

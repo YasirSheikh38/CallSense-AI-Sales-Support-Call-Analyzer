@@ -1,5 +1,19 @@
+# Node.js (frontend)
 node_modules
 dist
-.env
-__pycache__/
+
+# React build output
 *.log
+
+# Python (backend)
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# VSCode settings (optional)
+.vscode/
