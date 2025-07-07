@@ -1,22 +1,41 @@
-# 🎙️ CallSense AI — Audio Transcription and Dashboard App
+# 📞 CallSenseAI
 
-CallSense AI is a full-stack application that allows users to upload audio files, transcribe them using OpenAI's Whisper model, and store the transcriptions in a PostgreSQL database. Users can view all uploaded transcriptions on a clean, responsive dashboard UI.
+**CallSenseAI** is an AI-powered transcription dashboard that lets users upload call recordings, automatically transcribe them using OpenAI’s Whisper model, and store the results in a PostgreSQL database. The frontend provides an interactive view of all transcriptions via a beautiful dashboard.
+
+---
+
+## 🚀 Features
+
+- 🎙 Upload call audio files (MP3/WAV/M4A)
+- 🤖 Auto-transcription using Whisper ASR (Automatic Speech Recognition)
+- 🗃 Data stored securely in PostgreSQL
+- 📊 Dashboard to view all call transcriptions
+- ⚡️ FastAPI backend + React (Vite + TypeScript) frontend
+- 💅 Styled with Tailwind CSS
+- 🌐 Cross-origin support with CORS middleware
+
+---
+
+## 🛠 Tech Stack
+
+| Layer        | Technology            |
+|--------------|------------------------|
+| Backend      | FastAPI, Whisper, SQLAlchemy |
+| Frontend     | React, TypeScript, TailwindCSS |
+| Database     | PostgreSQL             |
+| Others       | Python-dotenv, CORS, Vite |
 
 ---
 
 ## 📁 Project Structure
 
-```
-
+```bash
 CallSenseAI/
 ├── backend/
 │   ├── app/
-│   │   ├── database.py
-│   │   ├── dependencies.py
 │   │   ├── models/
-│   │   │   ├── **init**.py
 │   │   │   └── call.py
-│   │   └── summarizer.py (optional)
+│   │   └── database.py
 │   ├── main.py
 │   ├── .env
 │   └── requirements.txt
@@ -24,107 +43,39 @@ CallSenseAI/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── pages/
-│   │   └── App.tsx
-│   ├── index.html
-│   ├── tailwind.config.ts
-│   └── postcss.config.js
-└── README.md
-
+│   │   ├── App.tsx
+│   │   └── index.css
+│   └── vite.config.ts
+├── uploads/
+├── README.md
+└── .gitignore
 ````
 
 ---
 
-## 🚀 Features
+## 🧪 Installation Guide
 
-- 🎧 Upload `.mp3` or `.wav` audio files
-- 🧠 Transcribe audio using Whisper AI
-- 💾 Save transcriptions to PostgreSQL
-- 📋 View transcriptions in a beautiful dashboard
-- ⚡ Built with FastAPI + React + TailwindCSS
+### 1️⃣ Backend Setup🐍 (FastAPI + Whisper)
 
----
+```bash
+#Go to backend directory
+cd backend
 
-## 🧪 Tech Stack
+#Create virtual environment
+python -m venv venv
+venv\Scripts\activate        # (On Windows)
 
-| Layer      | Technology         |
-|------------|--------------------|
-| Backend    | FastAPI, SQLAlchemy, Whisper, PostgreSQL |
-| Frontend   | React, TypeScript, TailwindCSS           |
-| Dev Tools  | Vite, .env, Git, Uvicorn, npm            |
-
----
-
-## ⚙️ Setup Instructions
-
-### 🐍 Backend (FastAPI + Whisper)
-
-1. **Go to backend directory**
-   ```bash
-   cd backend
-````
-
-2. **Create virtual environment**
-
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # On Windows
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure `.env` file**
-
-   ```
-   DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/callsenseai
-   ```
-
-5. **Run server**
-
-   ```bash
-   uvicorn main:app --reload
-   ```
-
----
-
-### 🌐 Frontend (React + TailwindCSS)
-
-1. **Go to frontend directory**
-
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start frontend**
-
-   ```bash
-   npm run dev
-   ```
-
----
-
-
-## 🔐 Environment Variables
-
-### Required in `.env` file (backend):
-
-```env
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/callsenseai
+#Install dependencies
+pip install -r requirements.txt
 ```
 
-> Optional (if using Hugging Face):
+📄 Create a `.env` file inside the `backend/` directory:
 
-```env
-HUGGINGFACE_API_KEY=your_token_here
+
+Start FastAPI server:
+
+```bash
+uvicorn main:app --reload
 ```
 
 ---
@@ -137,7 +88,33 @@ If you install new packages in backend, update the file using:
 pip freeze > requirements.txt
 ```
 
+
+### 2️⃣ Frontend Setup (React + TailwindCSS)
+
+```bash
+#Go to frontend directory
+cd frontend
+
+#Install dependencies
+npm install
+
+#Start frontend
+npm run dev
+```
+
+Frontend will run on: `http://localhost:5173`
+
 ---
+
+## 💡 Usage
+
+1. Open the frontend in browser: `http://localhost:5173`
+2. Upload a call audio file.
+3. The backend transcribes and stores it.
+4. View all transcriptions on the dashboard.
+
+---
+
 
 ## 💡 What More Can Be Added?
 
@@ -157,14 +134,22 @@ Here are some ideas for future improvements or advanced features you can build:
 
 ---
 
+
 ## 🤝 Contributing
 
-Pull requests are welcome. For major changes, please open an issue first.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
-## 📝 License
+## 📜 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
+---
 
+## 👨‍💻 Author
+
+**Yasir Sheikh**
+GitHub: https://github.com/YasirSheikh38
+
+---
