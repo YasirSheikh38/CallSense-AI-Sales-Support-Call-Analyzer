@@ -1,45 +1,51 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/pages/CallSummary.tsx
 
-interface CallDetail {
-  id: string;
-  summary: string;
-  emotion: string;
-  transcript: string;
-}
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const CallSummary = () => {
+export default function CallSummary() {
   const { id } = useParams();
-  const [call, setCall] = useState<CallDetail | null>(null);
+  const [transcription, setTranscription] = useState("");
+  const [summary, setSummary] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/call/${id}`).then((res) => {
-      setCall(res.data);
-    });
+    async function fetchData() {
+      try {
+        // Step 1: Get the transcription
+        const res = await axios.get(`http://localhost:8000/calls/${id}`);
+        setTranscription(res.data.transcript);
+
+        // Step 2: Send transcription to summarization endpoint
+        const summaryRes = await axios.post("http://localhost:8000/summary", {
+          text: res.data.transcript,
+        });
+
+        setSummary(summaryRes.data.summary);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
   }, [id]);
 
-  if (!call) return <p className="text-center">Loading...</p>;
+  if (loading) return <p>Loading summary...</p>;
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">Call Summary</h1>
-
+      <h2 className="text-2xl font-bold mb-2">Call Summary</h2>
       <div className="mb-4">
-        <strong>🧠 Summary:</strong>
-        <p>{call.summary}</p>
+        <h3 className="font-semibold">Full Transcription:</h3>
+        <p className="whitespace-pre-wrap">{transcription}</p>
       </div>
-
-      <div className="mb-4">
-        <strong>😊 Sentiment:</strong> {call.emotion}
-      </div>
-
-      <div className="mb-4">
-        <strong>📝 Transcript:</strong>
-        <pre className="bg-gray-100 p-3 rounded whitespace-pre-wrap">{call.transcript}</pre>
+      <div>
+        <h3 className="font-semibold">Generated Summary:</h3>
+        <p className="whitespace-pre-wrap">{summary}</p>
       </div>
     </div>
   );
-};
-
-export default CallSummary;
+}
